@@ -1,4 +1,6 @@
 #include "tablemodel2.h"
+#include "helpFunctions.h"
+
 
 TableModel2::TableModel2(int rowsCount, int colsCount, QObject* obj)
     : QAbstractTableModel(obj), rows(rowsCount), cols(colsCount)  { }
@@ -77,4 +79,41 @@ QVariant TableModel2::headerData (int section, Qt::Orientation orientation, int 
         }
     }
     return QVariant();
+}
+
+void TableModel2::refreshTable()
+{
+    QFile f(QCoreApplication::applicationDirPath() + "/db/meetings.db");
+    if (!f.open(QIODevice::ReadOnly)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
+    }
+
+    beginResetModel();
+    mat.clear();
+    int i = 0;
+    while (!f.atEnd()) {
+        QString line = f.readLine().trimmed();
+        if (line.isEmpty()) {
+            continue; // Пропуск пустых строк
+        }
+
+        QList<QString> l = split(line.toStdString(), ';');
+        if (l.size() < 3) {
+            qDebug() << "Ошибка: недостаточно элементов в строке";
+            continue; // Пропуск некорректных строк
+        }
+        qDebug() << l[0] << l[1] << l[2];
+        mat.insert(createIndex(i, 0), l[0]);
+        mat.insert(createIndex(i, 1), l[1]);
+        mat.insert(createIndex(i, 2), l[2]);
+        mat.insert(createIndex(i, 3), l[3]);
+        ++i;
+    }
+    rows = i;
+    endResetModel();
+
+    f.close();
+
+    //if (i > 0) emit dataChanged(createIndex(0,0), createIndex(i - 1, 2));
 }

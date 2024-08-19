@@ -19,6 +19,9 @@ protected slots:
     void slotTableDoubleClicked(const QModelIndex&);
     void slotMeetingsViewDoubleClicked(const QModelIndex&);
     void slotMeetingsResultViewDoubleClicked(const QModelIndex&);
+    void slotAddNewUserClicked();
+    void slotAddNewMeetindClicked();
+    void slotConnectDbClicked();
 
 private:
     QMenuBar * m;
@@ -34,8 +37,24 @@ private:
     QLineEdit* tlPassword;
     QLineEdit* tlDbName;
 
-    QDialog* dioResults;
+    QMainWindow* dioResults;
     TableModel3* tableMeetingsResults;
+
+    QDialog* dioAddNewUser;
+    QLineEdit* lineFull_name;
+    QLineEdit* lineAge;
+    QLineEdit* lineRegistration_adress;
+    QLineEdit* lineActual_adress;
+    QLineEdit* linePhone_number;
+    QLineEdit* lineCenter;
+    QLineEdit* lineMeetings_visited;
+
+    QDialog* dioAddNewMeeting;
+    QLineEdit* lineNumberOfMeeting;
+    QLineEdit* lineNameOfMeeting;
+    QLineEdit* lineTopics;
+    QLineEdit* lineParticipants;
+
 
     // QWidget interface
 protected:

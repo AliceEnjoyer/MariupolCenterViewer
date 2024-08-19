@@ -24,6 +24,7 @@ public:
     //void setSize(int rowCount);
 
     //void clear();
+    void refreshTable();
 private:
     QHash<QModelIndex, QString> mat;
     int rows;

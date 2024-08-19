@@ -10,10 +10,10 @@ window::window(QWidget *parent)
     QTableView* tableMeetingsView = new QTableView;
     tableMeetingsView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    table = new TableModel(3, 3);
+    table = new TableModel(0, 3);
     tableView->setModel(table);
 
-    tableMeetings = new TableModel2(4, 4);
+    tableMeetings = new TableModel2(0, 4);
     tableMeetingsView->setModel(tableMeetings);
     tableMeetingsView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -40,6 +40,7 @@ window::window(QWidget *parent)
     mTableMeetingsInfo->addAction("delete meeting info...");
 
 
+    mTableMeetings->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
     mDb->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
     mPerson->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
     mTableMeetingsInfo->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
@@ -47,6 +48,7 @@ window::window(QWidget *parent)
     m = new QMenuBar(this);
     m->addMenu(mDb);
     m->addMenu(mPerson);
+    m->addMenu(mTableMeetings);
     m->addMenu(mTableMeetingsInfo);
     m->addAction("About...");
 
@@ -101,23 +103,76 @@ window::window(QWidget *parent)
 
 
 
-    dioResults = new QDialog(this);
+    dioResults = new QMainWindow(this);
     QTableView* meetingsResultView = new QTableView;
     meetingsResultView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     meetingsResultView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    tableMeetingsResults = new TableModel3(5, 5);
+    tableMeetingsResults = new TableModel3(0, 5);
     meetingsResultView->setModel(tableMeetingsResults);
 
-    QVBoxLayout* vblDioMettingsResults = new QVBoxLayout();
-    vblDioMettingsResults->addWidget(meetingsResultView);
-
-    dioResults->setLayout(vblDioMettingsResults);
+    dioResults->setCentralWidget(meetingsResultView);
     dioResults->setGeometry(dioResults->x(), dioResults->y(), meetingsResultView->width()+40, 300);
+
+
+
+    dioAddNewUser = new QDialog(this);
+    lineFull_name = new QLineEdit();
+    lineAge = new QLineEdit();
+    lineRegistration_adress = new QLineEdit();
+    lineActual_adress = new QLineEdit();
+    linePhone_number = new QLineEdit();
+    lineCenter = new QLineEdit();
+    lineMeetings_visited = new QLineEdit();
+    QPushButton* bAddNewUser = new QPushButton("Add");
+    QVBoxLayout* vblAddNewUser = new QVBoxLayout;
+    vblAddNewUser->addWidget(new QLabel("Full name: "));
+    vblAddNewUser->addWidget(lineFull_name);
+    vblAddNewUser->addWidget(new QLabel("Age: "));
+    vblAddNewUser->addWidget(lineAge);
+    vblAddNewUser->addWidget(new QLabel("Registration address: "));
+    vblAddNewUser->addWidget(lineRegistration_adress);
+    vblAddNewUser->addWidget(new QLabel("Actual address: "));
+    vblAddNewUser->addWidget(lineActual_adress);
+    vblAddNewUser->addWidget(new QLabel("Phone number: "));
+    vblAddNewUser->addWidget(linePhone_number);
+    vblAddNewUser->addWidget(new QLabel("Center: "));
+    vblAddNewUser->addWidget(lineCenter);
+    vblAddNewUser->addWidget(new QLabel("Meetings visited: "));
+    vblAddNewUser->addWidget(lineMeetings_visited);
+    vblAddNewUser->addWidget(bAddNewUser);
+    dioAddNewUser->setLayout(vblAddNewUser);
+    //dioAddNewUser->setGeometry(dioAddNewUser->x(), dioAddNewUser->y(),dioAddNewUser->width(), 100);
+
+
+
+
+    dioAddNewMeeting = new QDialog(this);
+    lineNumberOfMeeting = new QLineEdit();
+    lineNameOfMeeting = new QLineEdit();
+    lineTopics = new QLineEdit();
+    lineParticipants = new QLineEdit();
+    QPushButton* bAddNewMeeting = new QPushButton("Add");
+    QVBoxLayout* vblAddNewMeeting = new QVBoxLayout;
+    vblAddNewMeeting->addWidget(new QLabel("Number of meeting: "));
+    vblAddNewMeeting->addWidget(lineNumberOfMeeting);
+    vblAddNewMeeting->addWidget(new QLabel("Name of meeting: "));
+    vblAddNewMeeting->addWidget(lineNameOfMeeting);
+    vblAddNewMeeting->addWidget(new QLabel("Topics: "));
+    vblAddNewMeeting->addWidget(lineTopics);
+    vblAddNewMeeting->addWidget(new QLabel("Participants: "));
+    vblAddNewMeeting->addWidget(lineParticipants);
+    vblAddNewMeeting->addWidget(bAddNewMeeting);
+    dioAddNewMeeting->setLayout(vblAddNewMeeting);
+
+
 
 
     connect(m, &QMenuBar::triggered, this, &window::slotMenuTriggered);
     connect(tableView, &QTableView::doubleClicked, this, &window::slotTableDoubleClicked);
     connect(tableMeetingsView, &QTableView::doubleClicked, this, &window::slotMeetingsViewDoubleClicked);
     connect(meetingsResultView, &QTableView::doubleClicked, this, &window::slotMeetingsResultViewDoubleClicked);
+    connect(bAddNewUser, &QPushButton::clicked, this, &window::slotAddNewUserClicked);
+    connect(bAddNewMeeting, &QPushButton::clicked, this, &window::slotAddNewMeetindClicked);
+    connect(bConnectDb, &QPushButton::clicked, this, &window::slotConnectDbClicked);
 }
 

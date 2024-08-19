@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    helpFunctions.cpp \
     main.cpp \
     tablemodel.cpp \
     tablemodel2.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     window_slots.cpp
 
 HEADERS += \
+    helpFunctions.h \
     tablemodel.h \
     tablemodel2.h \
     tablemodel3.h \

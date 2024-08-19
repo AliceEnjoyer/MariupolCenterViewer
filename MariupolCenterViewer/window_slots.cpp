@@ -1,4 +1,5 @@
 #include "window.h"
+#include "helpFunctions.h"
 #include <vector>
 #include <string>
 
@@ -22,6 +23,13 @@ void window::slotMenuTriggered(QAction* a) {
 //        }
     } else if (triggeredMenuText == "About...") {
         QMessageBox::about(this, "About", "<h1>MariupolCenterViewer</h1>\n<h3>The program was created to keep track of the participants of dialogue meetings within the scope of the work of humanitarian centers of the \"I am Mariupol\" Charitable Foundation by Valeriia Siechko, student of Computer science department of V. N. Karazin Kharkiv National University<h3>");
+    } else if (triggeredMenuText == "add person...") {
+        dioAddNewUser->show();
+    } else if (triggeredMenuText == "add meeting...") {
+        dioAddNewMeeting->show();
+    } else if (triggeredMenuText == "refresh") {
+        table->refreshTable();
+        tableMeetings->refreshTable();
     }
 }
 
@@ -30,14 +38,42 @@ QString window::personInfoGetter(int row, int col) {
     return txt.isEmpty() ? "UNKNOWN" : txt;
 }
 
-void window::slotTableDoubleClicked(const QModelIndex &i)
+void window::slotTableDoubleClicked(const QModelIndex &index)
 {
-    int row = i.row();
+    QFile f(QCoreApplication::applicationDirPath() + "/db/participants.db");
+    if (!f.open(QIODevice::ReadOnly)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
+    }
+
+    int row = index.row();
+    int i = 0;
+    while (!f.atEnd()) {
+        if(i == row) break;
+        f.readLine();
+        ++i;
+
+//        QList<QString> l = split(line.toStdString(), ';');
+//        if (l.size() < 3) {
+//            qDebug() << "Ошибка: недостаточно элементов в строке";
+//            continue; // Пропуск некорректных строк
+//        }
+//        if(l[5])
+    }
+    QString buf = f.readLine().trimmed();
+    QList<QString> l = split(buf.toStdString(), ';');
+
+    f.close();
+
+
     QString personInfo =
-    "Name: " + personInfoGetter(row, 0) + "\n" +
-    "city: " + personInfoGetter(row, 1) + "\n" +
-    "meetings visited: " + personInfoGetter(row, 2) + "\n" +
-    "\"bd\" info coming soon\n";
+    "Name: " + l[0] + "\n" +
+    "city: " + l[1] + "\n" +
+    "meetings visited: " + l[2] + "\n" +
+    "Age: " + l[3] + "\n" +
+    "Registration address: " + l[4] + "\n" +
+    "Phone number: " + l[5] + "\n" +
+    "Center: " + l[6] + "\n";
 
     QMessageBox::about(this, "Person info", personInfo);
 }
@@ -54,22 +90,47 @@ void window::slotMeetingsResultViewDoubleClicked(const QModelIndex &)
 
 }
 
-std::vector<std::string> split(const std::string &str, char delimiter) {
-    std::vector<std::string> tokens;
-    size_t start = 0;
-    size_t end = str.find(delimiter);
-
-    while (end != std::string::npos) {
-        tokens.push_back(str.substr(start, end - start));  // Извлекаем подстроку
-        start = end + 1;  // Начинаем после разделителя
-        end = str.find(delimiter, start);  // Ищем следующий разделитель
+void window::slotAddNewUserClicked()
+{
+    QFile f(QCoreApplication::applicationDirPath() + "/db/participants.db");
+    if (!f.open(QIODevice::Append)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
     }
+    QString buf = lineFull_name->text()+";"+
+            lineActual_adress->text()+";"+
+            lineMeetings_visited->text()+";"+
+            lineAge->text()+";"+
+            lineRegistration_adress->text()+";"+
+            linePhone_number->text()+";"+
+            lineCenter->text()+"\n";
 
-    // Добавляем последний токен (после последнего разделителя)
-    tokens.push_back(str.substr(start));
-
-    return tokens;
+    f.write(buf.toUtf8());
+    f.close();
+    table->refreshTable();
 }
 
+void window::slotAddNewMeetindClicked()
+{
+    QFile f(QCoreApplication::applicationDirPath() + "/db/meetings.db");
+    if (!f.open(QIODevice::Append)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
+    }
+    QString buf = lineNumberOfMeeting->text()+";"+
+            lineNameOfMeeting->text()+";"+
+            lineTopics->text()+";"+
+            lineParticipants->text()+"\n";
 
+    f.write(buf.toUtf8());
+    f.close();
+    tableMeetings->refreshTable();
+}
+
+void window::slotConnectDbClicked()
+{
+    table->refreshTable();
+    tableMeetings->refreshTable();
+    QMessageBox::about(this, "Info", "<h3>Database connected successfully!!<h3>");
+}
 

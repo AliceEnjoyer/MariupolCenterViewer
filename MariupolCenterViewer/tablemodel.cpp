@@ -1,4 +1,5 @@
 #include "tablemodel.h"
+#include "helpFunctions.h"
 
 TableModel::TableModel(int rowsCount, int colsCount, QObject* obj)
     : QAbstractTableModel(obj), rows(rowsCount), cols(colsCount)  { }
@@ -16,6 +17,43 @@ Qt::ItemFlags TableModel::flags( const QModelIndex& index ) const {
     Qt::ItemFlags flags = QAbstractTableModel::flags( index );
     return index.isValid() ? (flags | Qt::ItemIsEditable) : flags; // TODO make item is not editable
 }
+
+void TableModel::refreshTable()
+{
+    QFile f(QCoreApplication::applicationDirPath() + "/db/participants.db");
+    if (!f.open(QIODevice::ReadOnly)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
+    }
+
+    beginResetModel();
+    mat.clear();
+    int i = 0;
+    while (!f.atEnd()) {
+        QString line = f.readLine().trimmed();
+        if (line.isEmpty()) {
+            continue; // Пропуск пустых строк
+        }
+
+        QList<QString> l = split(line.toStdString(), ';');
+        if (l.size() < 3) {
+            qDebug() << "Ошибка: недостаточно элементов в строке";
+            continue; // Пропуск некорректных строк
+        }
+        qDebug() << l[0] << l[1] << l[2];
+        mat.insert(createIndex(i, 0), l[0]);
+        mat.insert(createIndex(i, 1), l[1]);
+        mat.insert(createIndex(i, 2), l[2]);
+        ++i;
+    }
+    rows = i;
+    endResetModel();
+
+    f.close();
+
+    //if (i > 0) emit dataChanged(createIndex(0,0), createIndex(i - 1, 2));
+}
+
 
 //void TableModel::setSize(int rowCount)
 //{
@@ -36,7 +74,7 @@ bool TableModel::setData( const QModelIndex& index, const QVariant& value, int r
 
 //    VectoredMat[index.row()][index.column()] = buf;
 
-//    mat[index] = toStr;
+//    mat[index] = value.toString();
 //    emit dataChanged(index, index);
     return true;
 }
