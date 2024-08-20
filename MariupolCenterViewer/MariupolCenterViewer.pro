@@ -13,7 +13,6 @@ SOURCES += \
     main.cpp \
     tablemodel.cpp \
     tablemodel2.cpp \
-    tablemodel3.cpp \
     window.cpp \
     window_slots.cpp
 
@@ -21,7 +20,6 @@ HEADERS += \
     helpFunctions.h \
     tablemodel.h \
     tablemodel2.h \
-    tablemodel3.h \
     window.h
 
 # Default rules for deployment.

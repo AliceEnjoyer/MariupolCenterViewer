@@ -78,11 +78,40 @@ void window::slotTableDoubleClicked(const QModelIndex &index)
     QMessageBox::about(this, "Person info", personInfo);
 }
 
-void window::slotMeetingsViewDoubleClicked(const QModelIndex &i)
+void window::slotMeetingsViewDoubleClicked(const QModelIndex &index)
 {
-    QString temp = tableMeetings->data(i.row(), 0).toString();
-    dioResults->setWindowTitle(temp == "" ? "Number of meeting: UNKNOWN" : "Number of meeting: " + temp);
-    dioResults->show();
+    int row = index.row();
+    QString temp = tableMeetings->data(row, 0).toString();
+
+    QFile f(QCoreApplication::applicationDirPath() + "/db/meetings.db");
+    if (!f.open(QIODevice::ReadOnly)) {
+        qDebug() << "Can not open file:" << f.errorString();
+        return;
+    }
+
+
+    int i = 0;
+    while (!f.atEnd()) {
+        if(i == row) break;
+        f.readLine();
+        ++i;
+    }
+    QString buf = f.readLine().trimmed();
+    QList<QString> l = split(buf.toStdString(), ';');
+
+    f.close();
+
+
+    QString personInfo =
+    "Number of meeting: " + l[0] + "\n" +
+    "Name of meeting: " + l[1] + "\n" +
+    "Topics: " + l[2] + "\n" +
+    "Participants: " + l[3] + "\n" +
+    "Essence: " + l[4] + "\n" +
+    "Author: " + l[5] + "\n" +
+    "How to use: " + l[6] + "\n";
+
+    QMessageBox::about(this, temp == "" ? "Number of meeting: UNKNOWN" : "Number of meeting: " + temp, personInfo);
 }
 
 void window::slotMeetingsResultViewDoubleClicked(const QModelIndex &)
@@ -120,7 +149,10 @@ void window::slotAddNewMeetindClicked()
     QString buf = lineNumberOfMeeting->text()+";"+
             lineNameOfMeeting->text()+";"+
             lineTopics->text()+";"+
-            lineParticipants->text()+"\n";
+            lineParticipants->text()+";"+
+            lineEssence->toPlainText()+";"+
+            lineAuthor->text()+";"+
+            lineHowToUse->toPlainText()+"\n";
 
     f.write(buf.toUtf8());
     f.close();

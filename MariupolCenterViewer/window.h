@@ -5,7 +5,6 @@
 #include <QSqlDatabase>
 #include "tablemodel.h"
 #include "tablemodel2.h"
-#include "tablemodel3.h"
 
 class window : public QMainWindow
 {
@@ -37,8 +36,7 @@ private:
     QLineEdit* tlPassword;
     QLineEdit* tlDbName;
 
-    QMainWindow* dioResults;
-    TableModel3* tableMeetingsResults;
+    QDialog* dioResults;
 
     QDialog* dioAddNewUser;
     QLineEdit* lineFull_name;
@@ -54,6 +52,9 @@ private:
     QLineEdit* lineNameOfMeeting;
     QLineEdit* lineTopics;
     QLineEdit* lineParticipants;
+    QTextEdit* lineEssence;
+    QLineEdit* lineAuthor;
+    QTextEdit* lineHowToUse;
 
 
     // QWidget interface

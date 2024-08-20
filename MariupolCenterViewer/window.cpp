@@ -33,23 +33,15 @@ window::window(QWidget *parent)
     mTableMeetings->addSeparator();
     mTableMeetings->addAction("delete meeting...");
 
-    QMenu* mTableMeetingsInfo = new QMenu("meetings info table");
-    mTableMeetingsInfo->addAction("add meeting info...");
-    mTableMeetingsInfo->addAction("change meeting info...");
-    mTableMeetingsInfo->addSeparator();
-    mTableMeetingsInfo->addAction("delete meeting info...");
-
 
     mTableMeetings->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
     mDb->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
     mPerson->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
-    mTableMeetingsInfo->setStyleSheet("QMenu{background: rgb(65, 105, 225); color: white;} QMenu::item:selected  {background-color: rgb(255, 216, 0);color: black;}");
 
     m = new QMenuBar(this);
     m->addMenu(mDb);
     m->addMenu(mPerson);
     m->addMenu(mTableMeetings);
-    m->addMenu(mTableMeetingsInfo);
     m->addAction("About...");
 
     setMenuBar(m);
@@ -103,15 +95,9 @@ window::window(QWidget *parent)
 
 
 
-    dioResults = new QMainWindow(this);
-    QTableView* meetingsResultView = new QTableView;
-    meetingsResultView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    meetingsResultView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    tableMeetingsResults = new TableModel3(0, 5);
-    meetingsResultView->setModel(tableMeetingsResults);
+    dioResults = new QDialog(this);
 
-    dioResults->setCentralWidget(meetingsResultView);
-    dioResults->setGeometry(dioResults->x(), dioResults->y(), meetingsResultView->width()+40, 300);
+    //dioResults->setGeometry(dioResults->x(), dioResults->y(), meetingsResultView->width()+40, 300);
 
 
 
@@ -151,6 +137,9 @@ window::window(QWidget *parent)
     lineNameOfMeeting = new QLineEdit();
     lineTopics = new QLineEdit();
     lineParticipants = new QLineEdit();
+    lineEssence = new QTextEdit();
+    lineAuthor = new QLineEdit();
+    lineHowToUse = new QTextEdit();
     QPushButton* bAddNewMeeting = new QPushButton("Add");
     QVBoxLayout* vblAddNewMeeting = new QVBoxLayout;
     vblAddNewMeeting->addWidget(new QLabel("Number of meeting: "));
@@ -161,6 +150,12 @@ window::window(QWidget *parent)
     vblAddNewMeeting->addWidget(lineTopics);
     vblAddNewMeeting->addWidget(new QLabel("Participants: "));
     vblAddNewMeeting->addWidget(lineParticipants);
+    vblAddNewMeeting->addWidget(new QLabel("Essence: "));
+    vblAddNewMeeting->addWidget(lineEssence);
+    vblAddNewMeeting->addWidget(new QLabel("Author: "));
+    vblAddNewMeeting->addWidget(lineAuthor);
+    vblAddNewMeeting->addWidget(new QLabel("How to use: "));
+    vblAddNewMeeting->addWidget(lineHowToUse);
     vblAddNewMeeting->addWidget(bAddNewMeeting);
     dioAddNewMeeting->setLayout(vblAddNewMeeting);
 
@@ -169,8 +164,7 @@ window::window(QWidget *parent)
 
     connect(m, &QMenuBar::triggered, this, &window::slotMenuTriggered);
     connect(tableView, &QTableView::doubleClicked, this, &window::slotTableDoubleClicked);
-    connect(tableMeetingsView, &QTableView::doubleClicked, this, &window::slotMeetingsViewDoubleClicked);
-    connect(meetingsResultView, &QTableView::doubleClicked, this, &window::slotMeetingsResultViewDoubleClicked);
+    connect(tableMeetingsView, &QTableView::doubleClicked, this, &window::slotMeetingsViewDoubleClicked);   
     connect(bAddNewUser, &QPushButton::clicked, this, &window::slotAddNewUserClicked);
     connect(bAddNewMeeting, &QPushButton::clicked, this, &window::slotAddNewMeetindClicked);
     connect(bConnectDb, &QPushButton::clicked, this, &window::slotConnectDbClicked);
